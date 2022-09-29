@@ -26,8 +26,6 @@ impl Consumer {
     }
 }
 
-const ACCESS_TOKEN: &'static str = "A-B-C";
-
 pub mod factory;
 
 #[test]
