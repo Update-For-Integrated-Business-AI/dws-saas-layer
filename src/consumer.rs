@@ -42,11 +42,7 @@ fn decrease_quota() {
 
 #[test]
 fn do_not_decrease_if_not_enough_quota() {
-    let mut consumer: Consumer = Consumer {
-        id: 1,
-        quota: 1,
-        access_token: String::from(ACCESS_TOKEN),
-    };
+    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "1")]));
 
     match consumer.decrease_quota(2) {
         Some(_) => (),
@@ -58,11 +54,7 @@ fn do_not_decrease_if_not_enough_quota() {
 
 #[test]
 fn add_quota() {
-    let mut consumer: Consumer = Consumer {
-        id: 1,
-        quota: 1,
-        access_token: String::from(ACCESS_TOKEN),
-    };
+    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "1")]));
 
     match consumer.add_quota(100) {
         Some(_) => (),
