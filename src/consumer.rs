@@ -9,6 +9,14 @@ pub struct Consumer {
 }
 
 impl Consumer {
+    pub fn new(attr: &HashMap<&str, &str>) -> Consumer {
+        Consumer {
+            id: attr.get("id").unwrap_or(&"1").parse::<u32>().unwrap(),
+            quota: attr.get("quota").unwrap_or(&"10").parse::<u128>().unwrap(),
+            access_token: attr.get("access_token").unwrap_or(&"A-B-C").to_string(),
+        }
+    }
+
     pub fn decrease_quota(&mut self, amount: u128) -> Option<()> {
         if amount > self.quota {
             return None;
@@ -26,11 +34,9 @@ impl Consumer {
     }
 }
 
-pub mod factory;
-
 #[test]
 fn decrease_quota() {
-    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "128")]));
+    let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "128")]));
 
     consumer.decrease_quota(1);
     consumer.decrease_quota(2);
@@ -40,7 +46,7 @@ fn decrease_quota() {
 
 #[test]
 fn do_not_decrease_if_not_enough_quota() {
-    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "1")]));
+    let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
 
     match consumer.decrease_quota(2) {
         Some(_) => (),
@@ -52,7 +58,7 @@ fn do_not_decrease_if_not_enough_quota() {
 
 #[test]
 fn add_quota() {
-    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "1")]));
+    let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
 
     match consumer.add_quota(100) {
         Some(_) => (),
