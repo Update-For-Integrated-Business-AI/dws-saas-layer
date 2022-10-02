@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use super::Consumer;
 
 pub struct ConsumerList {
@@ -19,37 +17,43 @@ impl ConsumerList {
     }
 }
 
-#[test]
-fn get_consumer_by_id() {
-    let id = 2;
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
 
-    let consumers = vec![
-        Consumer::new(&HashMap::from([("id", "1")])),
-        Consumer::new(&HashMap::from([("id", "2")])),
-        Consumer::new(&HashMap::from([("id", "3")])),
-    ];
+    #[test]
+    fn get_consumer_by_id() {
+        let id = 2;
 
-    let consumer_list = ConsumerList { consumers };
+        let consumers = vec![
+            Consumer::new(&HashMap::from([("id", "1")])),
+            Consumer::new(&HashMap::from([("id", "2")])),
+            Consumer::new(&HashMap::from([("id", "3")])),
+        ];
 
-    let consumer = consumer_list.get_by_id(id).unwrap();
+        let consumer_list = ConsumerList { consumers };
 
-    assert_eq!(consumer.id, id)
-}
+        let consumer = consumer_list.get_by_id(id).unwrap();
 
-#[test]
-fn get_consumer_by_access_token() {
-    let access_token = "A-2";
-    let id = 2;
+        assert_eq!(consumer.id, id)
+    }
 
-    let consumers = vec![
-        Consumer::new(&HashMap::from([("id", "1"), ("access_token", "A-1")])),
-        Consumer::new(&HashMap::from([("id", "2"), ("access_token", "A-2")])),
-        Consumer::new(&HashMap::from([("id", "3"), ("access_token", "A-3")])),
-    ];
+    #[test]
+    fn get_consumer_by_access_token() {
+        let access_token = "A-2";
+        let id = 2;
 
-    let consumer_list = ConsumerList { consumers };
+        let consumers = vec![
+            Consumer::new(&HashMap::from([("id", "1"), ("access_token", "A-1")])),
+            Consumer::new(&HashMap::from([("id", "2"), ("access_token", "A-2")])),
+            Consumer::new(&HashMap::from([("id", "3"), ("access_token", "A-3")])),
+        ];
 
-    let consumer = consumer_list.get_by_access_token(access_token).unwrap();
+        let consumer_list = ConsumerList { consumers };
 
-    assert_eq!(consumer.id, id)
+        let consumer = consumer_list.get_by_access_token(access_token).unwrap();
+
+        assert_eq!(consumer.id, id)
+    }
 }

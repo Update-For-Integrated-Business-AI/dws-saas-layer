@@ -34,36 +34,40 @@ impl Consumer {
     }
 }
 
-#[test]
-fn decrease_quota() {
-    let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "128")]));
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn decrease_quota() {
+        let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "128")]));
 
-    consumer.decrease_quota(1);
-    consumer.decrease_quota(2);
+        consumer.decrease_quota(1);
+        consumer.decrease_quota(2);
 
-    assert_eq!(consumer.quota, 125)
-}
-
-#[test]
-fn do_not_decrease_if_not_enough_quota() {
-    let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
-
-    match consumer.decrease_quota(2) {
-        Some(_) => (),
-        None => println!("Not enough credit."),
+        assert_eq!(consumer.quota, 125)
     }
 
-    assert_eq!(consumer.quota, 1)
-}
+    #[test]
+    fn do_not_decrease_if_not_enough_quota() {
+        let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
 
-#[test]
-fn add_quota() {
-    let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
+        match consumer.decrease_quota(2) {
+            Some(_) => (),
+            None => println!("Not enough credit."),
+        }
 
-    match consumer.add_quota(100) {
-        Some(_) => (),
-        None => println!("Couldn't add quota."),
+        assert_eq!(consumer.quota, 1)
     }
 
-    assert_eq!(consumer.quota, 101)
+    #[test]
+    fn add_quota() {
+        let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
+
+        match consumer.add_quota(100) {
+            Some(_) => (),
+            None => println!("Couldn't add quota."),
+        }
+
+        assert_eq!(consumer.quota, 101)
+    }
 }
