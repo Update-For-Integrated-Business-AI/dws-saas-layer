@@ -1,13 +1,18 @@
+
 mod consumer;
 mod product;
 
-use std::collections::HashMap;
+use crate::consumer::Consumer;
 
-use consumer::factory as consumer_factory;
+
+
 
 #[test]
 fn successful_request() {
-    let mut consumer = consumer_factory::create_consumer(&HashMap::from([("quota", "2")]));
+    let mut consumer = Consumer {
+        quota: 2,
+        ..Default::default()
+    };
 
     let mut product = product::Product {
         price: 1,
@@ -22,7 +27,10 @@ fn successful_request() {
 }
 #[test]
 fn failed_request() {
-    let mut consumer = consumer_factory::create_consumer(&HashMap::from([("quota", "2")]));
+    let mut consumer = Consumer {
+        quota: 2,
+        ..Default::default()
+    };
 
     let mut product = product::Product {
         price: 5,

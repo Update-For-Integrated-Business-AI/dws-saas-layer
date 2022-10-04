@@ -1,7 +1,6 @@
-use std::collections::HashMap;
-
 pub mod consumer_list;
 
+#[derive(Default)]
 pub struct Consumer {
     pub id: u32,
     pub quota: u128,
@@ -26,11 +25,9 @@ impl Consumer {
     }
 }
 
-pub mod factory;
-
 #[test]
 fn decrease_quota() {
-    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "128")]));
+    let mut consumer: Consumer = Consumer { quota: 128, ..Default::default() };
 
     consumer.decrease_quota(1);
     consumer.decrease_quota(2);
@@ -40,7 +37,8 @@ fn decrease_quota() {
 
 #[test]
 fn do_not_decrease_if_not_enough_quota() {
-    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "1")]));
+    let mut consumer: Consumer = Consumer { quota: 1, ..Default::default() };
+
 
     match consumer.decrease_quota(2) {
         Some(_) => (),
@@ -52,7 +50,7 @@ fn do_not_decrease_if_not_enough_quota() {
 
 #[test]
 fn add_quota() {
-    let mut consumer: Consumer = factory::create_consumer(&HashMap::from([("quota", "1")]));
+    let mut consumer: Consumer = Consumer { quota: 1, ..Default::default() };
 
     match consumer.add_quota(100) {
         Some(_) => (),
