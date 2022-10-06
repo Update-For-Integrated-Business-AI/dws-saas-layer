@@ -1,9 +1,9 @@
-mod consumer;
-mod product;
+pub mod consumer;
+pub mod product;
 
 use std::collections::HashMap;
 
-use consumer::factory as consumer_factory;
+pub use consumer::factory as consumer_factory;
 
 #[test]
 fn successful_request() {

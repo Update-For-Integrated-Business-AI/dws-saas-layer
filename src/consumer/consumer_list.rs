@@ -7,12 +7,15 @@ pub struct ConsumerList {
 }
 
 impl ConsumerList {
-    fn get_by_id(&self, id: u32) -> Option<&Consumer> {
+    pub fn get_by_id(&self, id: u32) -> Option<&Consumer> {
         return self.consumers.iter().find(|c| c.id == id);
     }
 
-    fn get_by_access_token(&self, access_token: &str) -> Option<&Consumer> {
-        return self.consumers.iter().find(|c| c.access_token == access_token);
+    pub fn get_by_access_token(&self, access_token: &str) -> Option<&Consumer> {
+        return self
+            .consumers
+            .iter()
+            .find(|c| c.access_token == access_token);
     }
 }
 
