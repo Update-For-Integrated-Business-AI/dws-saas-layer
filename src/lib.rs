@@ -1,5 +1,6 @@
 pub mod consumer;
 pub mod product;
+pub mod guards;
 
 pub use crate::consumer::Consumer;
 

@@ -1,26 +1,17 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::http::Status;
-use rocket::request::{FromRequest, Outcome, Request};
-use rocket::State;
 use std::collections::HashMap;
-use sass_layer::Consumer;
 
-use sass_layer::consumer::{consumer_list::ConsumerList};
+use sass_layer::consumer::{consumer_list::ConsumerList, Consumer};
 
-#[derive(Debug)]
-struct ApiKey<'r>(&'r str);
+use sass_layer::guards::{HostHeader, ApiKey};
 
-#[derive(Debug)]
-enum ApiKeyError {
-    Missing,
-    Invalid,
-}
+
 
 #[get("/")]
-fn index(_key: ApiKey) -> &'static str {
-    "Hello, world!"
+fn index(_key: ApiKey, _host: HostHeader, ) -> String{
+    format!("Hello, world!")
 }
 
 use rocket::tokio::time::{sleep, Duration};
@@ -43,27 +34,6 @@ fn rocket() -> _ {
         .manage(ConsumerList { consumers })
 }
 
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for ApiKey<'r> {
-    type Error = ApiKeyError;
-
-    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        /// Returns true if `key` is a valid API key string.
-        async fn is_valid(req: &Request<'_>, key: &str) -> bool {
-            let consumer_list = req.guard::<&State<ConsumerList>>().await.unwrap();
-            match consumer_list.get_by_access_token(key) {
-                Some(_) => true,
-                None => false,
-            }
-        }
-
-        match req.headers().get_one("x-api-key") {
-            None => Outcome::Failure((Status::Unauthorized, ApiKeyError::Missing)),
-            Some(key) if is_valid(req, key).await => Outcome::Success(ApiKey(key)),
-            Some(_) => Outcome::Failure((Status::Unauthorized, ApiKeyError::Invalid)),
-        }
-    }
-}
 
 #[cfg(test)]
 mod test {
