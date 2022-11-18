@@ -11,14 +11,18 @@ impl Product {
     }
 }
 
-#[test]
-fn add_request() {
-    let mut product = Product {
-        price: 1,
-        requests: 5,
-    };
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn add_request() {
+        let mut product = Product {
+            price: 1,
+            requests: 5,
+        };
 
-    product.add_request(1);
+        product.add_request(1);
 
-    assert_eq!(product.requests, 6);
+        assert_eq!(product.requests, 6);
+    }
 }

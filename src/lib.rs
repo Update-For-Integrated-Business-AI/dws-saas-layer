@@ -3,37 +3,43 @@ pub mod product;
 
 use std::collections::HashMap;
 
-pub use consumer::factory as consumer_factory;
+pub use crate::consumer::Consumer;
 
-#[test]
-fn successful_request() {
-    let mut consumer = consumer_factory::create_consumer(&HashMap::from([("quota", "2")]));
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
 
-    let mut product = product::Product {
-        price: 1,
-        requests: 5,
-    };
+    #[test]
+    fn successful_request() {
+        let mut consumer = Consumer::new(&HashMap::from([("quota", "2")]));
 
-    consumer.decrease_quota(product.price);
-    product.add_request(1);
+        let mut product = product::Product {
+            price: 1,
+            requests: 5,
+        };
 
-    assert_eq!(consumer.quota, 1);
-    assert_eq!(product.requests, 6);
-}
-#[test]
-fn failed_request() {
-    let mut consumer = consumer_factory::create_consumer(&HashMap::from([("quota", "2")]));
+        consumer.decrease_quota(product.price);
+        product.add_request(1);
 
-    let mut product = product::Product {
-        price: 5,
-        requests: 5,
-    };
+        assert_eq!(consumer.quota, 1);
+        assert_eq!(product.requests, 6);
+    }
+    #[test]
+    fn failed_request() {
+        let mut consumer = Consumer::new(&HashMap::from([("quota", "2")]));
 
-    match consumer.decrease_quota(product.price) {
-        Some(_) => product.add_request(1).unwrap(),
-        None => println!("Not enough credit."),
-    };
+        let mut product = product::Product {
+            price: 5,
+            requests: 5,
+        };
 
-    assert_eq!(consumer.quota, 2);
-    assert_eq!(product.requests, 5);
+        match consumer.decrease_quota(product.price) {
+            Some(_) => product.add_request(1).unwrap(),
+            None => println!("Not enough credit."),
+        };
+
+        assert_eq!(consumer.quota, 2);
+        assert_eq!(product.requests, 5);
+    }
 }
