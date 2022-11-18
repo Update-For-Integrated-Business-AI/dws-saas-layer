@@ -7,7 +7,7 @@ use rocket::State;
 use std::collections::HashMap;
 use sass_layer::Consumer;
 
-use sass_layer::consumer::{self, consumer_list::ConsumerList};
+use sass_layer::consumer::{consumer_list::ConsumerList};
 
 #[derive(Debug)]
 struct ApiKey<'r>(&'r str);
@@ -16,6 +16,31 @@ struct ApiKey<'r>(&'r str);
 enum ApiKeyError {
     Missing,
     Invalid,
+}
+
+#[get("/")]
+fn index(_key: ApiKey) -> &'static str {
+    "Hello, world!"
+}
+
+use rocket::tokio::time::{sleep, Duration};
+
+#[get("/delay/<seconds>")]
+async fn delay(seconds: u64) -> String {
+    sleep(Duration::from_secs(seconds)).await;
+    format!("Waited for {} seconds", seconds)
+}
+
+#[launch]
+fn rocket() -> _ {
+    let consumers = vec![Consumer::new(&HashMap::from([
+        ("id", "1"),
+        ("access_token", "user-1"),
+    ]))];
+
+    rocket::build()
+        .mount("/", routes![index, delay])
+        .manage(ConsumerList { consumers })
 }
 
 #[rocket::async_trait]
@@ -38,23 +63,6 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
             Some(_) => Outcome::Failure((Status::Unauthorized, ApiKeyError::Invalid)),
         }
     }
-}
-
-#[get("/")]
-fn index(key: ApiKey) -> &'static str {
-    "Hello, world!"
-}
-
-#[launch]
-fn rocket() -> _ {
-    let consumers = vec![Consumer::new(&HashMap::from([
-        ("id", "1"),
-        ("access_token", "user-1"),
-    ]))];
-
-    rocket::build()
-        .mount("/", routes![index])
-        .manage(ConsumerList { consumers })
 }
 
 #[cfg(test)]
