@@ -5,6 +5,7 @@ use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 use rocket::State;
 use std::collections::HashMap;
+use sass_layer::Consumer;
 
 use sass_layer::consumer::{self, consumer_list::ConsumerList};
 
@@ -46,7 +47,7 @@ fn index(key: ApiKey) -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-    let consumers = vec![consumer::factory::create_consumer(&HashMap::from([
+    let consumers = vec![Consumer::new(&HashMap::from([
         ("id", "1"),
         ("access_token", "user-1"),
     ]))];
