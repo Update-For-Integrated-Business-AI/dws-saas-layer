@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 pub mod consumer_list;
+pub mod factory;
 
 pub struct Consumer {
     pub id: u32,

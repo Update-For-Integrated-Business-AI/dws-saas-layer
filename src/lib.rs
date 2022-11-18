@@ -1,5 +1,7 @@
-mod consumer;
-mod product;
+pub mod consumer;
+pub mod product;
+
+use std::collections::HashMap;
 
 pub use crate::consumer::Consumer;
 
