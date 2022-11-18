@@ -11,7 +11,7 @@ mod tests {
 
     #[test]
     fn successful_request() {
-        let mut consumer = Consumer::new(&HashMap::from([("quota", "2")]));
+        let mut consumer = Consumer::fake(&HashMap::from([("quota", "2")]));
 
         let mut product = product::Product {
             price: 1,
@@ -26,7 +26,7 @@ mod tests {
     }
     #[test]
     fn failed_request() {
-        let mut consumer = Consumer::new(&HashMap::from([("quota", "2")]));
+        let mut consumer = Consumer::fake(&HashMap::from([("quota", "2")]));
 
         let mut product = product::Product {
             price: 5,

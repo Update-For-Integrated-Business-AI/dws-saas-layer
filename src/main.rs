@@ -24,7 +24,7 @@ async fn delay(seconds: u64) -> String {
 
 #[launch]
 fn rocket() -> _ {
-    let consumers = vec![Consumer::new(&HashMap::from([
+    let consumers = vec![Consumer::fake(&HashMap::from([
         ("id", "1"),
         ("access_token", "user-1"),
     ]))];

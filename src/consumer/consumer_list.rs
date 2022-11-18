@@ -27,9 +27,9 @@ mod tests {
         let id = 2;
 
         let consumers = vec![
-            Consumer::new(&HashMap::from([("id", "1")])),
-            Consumer::new(&HashMap::from([("id", "2")])),
-            Consumer::new(&HashMap::from([("id", "3")])),
+            Consumer::fake(&HashMap::from([("id", "1")])),
+            Consumer::fake(&HashMap::from([("id", "2")])),
+            Consumer::fake(&HashMap::from([("id", "3")])),
         ];
 
         let consumer_list = ConsumerList { consumers };
@@ -45,9 +45,9 @@ mod tests {
         let id = 2;
 
         let consumers = vec![
-            Consumer::new(&HashMap::from([("id", "1"), ("access_token", "A-1")])),
-            Consumer::new(&HashMap::from([("id", "2"), ("access_token", "A-2")])),
-            Consumer::new(&HashMap::from([("id", "3"), ("access_token", "A-3")])),
+            Consumer::fake(&HashMap::from([("id", "1"), ("access_token", "A-1")])),
+            Consumer::fake(&HashMap::from([("id", "2"), ("access_token", "A-2")])),
+            Consumer::fake(&HashMap::from([("id", "3"), ("access_token", "A-3")])),
         ];
 
         let consumer_list = ConsumerList { consumers };
