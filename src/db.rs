@@ -63,6 +63,12 @@ mod file_db {
         return create_flat_table(columns, rows);
     }
 
+    pub fn read_from_string(content: &String) -> Vec<HashMap<String, String>> {
+        let columns = get_column_names(content);
+        let rows = get_records(content);
+        return create_flat_table(columns, rows);
+    }
+
     struct FlatTable<K, V> {
         items: Vec<HashMap<K, V>>,
     }
@@ -146,19 +152,15 @@ mod file_db {
         }
         #[test]
         fn test_finding_by_attribute_and_value() {
+            let table = String::from(
+                "\
+            column1, column2, column3
+            row1_value1, row1_value2, row1_value3
+            row2_value1, row2_value2, row2_value3",
+            );
+
             let flat_table = FlatTable {
-                items: vec![
-                    HashMap::from([
-                        ("column1".to_string(), "row1_value1".to_string()),
-                        ("column2".to_string(), "row1_value2".to_string()),
-                        ("column3".to_string(), "row1_value3".to_string())
-                    ]),
-                    HashMap::from([
-                        ("column1".to_string(), "row2_value1".to_string()),
-                        ("column2".to_string(), "row2_value2".to_string()),
-                        ("column3".to_string(), "row2_value3".to_string())
-                    ])
-                ]
+                items: read_from_string(&table)
             };
 
             if let Some(record) = flat_table.find_by("column2", "row2_value2") {
