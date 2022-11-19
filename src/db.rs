@@ -17,13 +17,13 @@ fn get_column_names(content: &String) -> Vec<String> {
 
 fn get_rows(content: &String) -> Vec<Vec<String>> {
     let mut rows = vec![];
-    for line in content.lines().skip(1) {
+    for line in content.lines().skip(1) { // skip header line (header)
         let row = match Some(line) {
-            Some(l) => l
-                .split(',')
-                .map(|f| String::from(f.trim()))
-                .collect::<Vec<String>>(),
-            None => panic!("Table has no rows"),
+            Some(l) => 
+                l.split(',')
+                    .map(|f| String::from(f.trim()))
+                    .collect::<Vec<String>>(),
+            None => vec![], // add empty row if the database is empty
         };
         rows.push(row);
     }
@@ -95,7 +95,8 @@ mod tests {
 
     #[test]
     fn test_creating_data_object() {
-        let table = String::from("\
+        let table = String::from(
+            "\
         column1, column2, column3
         row1_value1, row1_value2, row1_value3
         row2_value1, row2_value2, row2_value3",
