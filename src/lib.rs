@@ -1,8 +1,8 @@
 pub mod consumer;
+pub mod guards;
 pub mod product;
 pub mod service;
-pub mod guards;
-
+pub mod db;
 pub use crate::consumer::Consumer;
 
 #[cfg(test)]
