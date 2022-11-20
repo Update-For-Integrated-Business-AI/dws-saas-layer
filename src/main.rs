@@ -1,10 +1,11 @@
 #[macro_use]
 extern crate rocket;
 
-use std::collections::HashMap;
+use std::sync::{Mutex};
 
-use sass_layer::consumer::{consumer_list::ConsumerList, Consumer};
+use sass_layer::consumer::{consumer_list::ConsumerList};
 
+use sass_layer::db::file_db::FlatTable;
 use sass_layer::guards::{HostHeader, ApiKey};
 
 
@@ -24,14 +25,11 @@ async fn delay(seconds: u64) -> String {
 
 #[launch]
 fn rocket() -> _ {
-    let consumers = vec![Consumer::fake(&HashMap::from([
-        ("id", "1"),
-        ("access_token", "user-1"),
-    ]))];
+    let db = Mutex::new(FlatTable::new("consumers".to_string()));
 
     rocket::build()
         .mount("/", routes![index, delay])
-        // .manage(ConsumerList { consumers })
+        .manage(ConsumerList::new(db))
 }
 
 
