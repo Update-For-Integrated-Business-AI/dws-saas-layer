@@ -9,7 +9,7 @@ pub struct ConsumerList<D> {
     pub consumers: Vec<Consumer>,
 }
 
-type FlatConsumerList = ConsumerList<FlatTable<String, String>>;
+pub type FlatConsumerList = ConsumerList<FlatTable<String, String>>;
 
 impl FlatConsumerList {
     pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {

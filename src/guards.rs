@@ -1,9 +1,7 @@
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 use rocket::State;
-use crate::consumer::consumer_list::ConsumerList;
-use crate::db::file_db::FlatTable;
-
+use crate::consumer::consumer_list::{FlatConsumerList};
 #[derive(Debug)]
 pub struct HostHeader<'a>(pub &'a str);
 
@@ -37,7 +35,7 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         /// Returns true if `key` is a valid API key string.
         async fn is_valid(req: &Request<'_>, key: &str) -> bool {
-            let consumer_list = req.guard::<&State<ConsumerList<FlatTable<String, String>>>>().await.unwrap();
+            let consumer_list = req.guard::<&State<FlatConsumerList>>().await.unwrap();
             match consumer_list.get_by_access_token(key) {
                 Some(_) => true,
                 None => false,
