@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Mutex};
 
 pub trait Searchable<K, V> {
     fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<K, V>>;
@@ -6,11 +6,12 @@ pub trait Searchable<K, V> {
 
 pub trait ModelAble<S, K, V> {
     fn get_by_attr<D: Searchable<K, V>, L: ToStruct<S, HashMap<K, V>>>(
-        db: &mut D,
+        db: &Mutex<D>,
         attr: &str,
         value: String,
     ) -> Option<S> {
-        let consumer = match db.find_by(attr, value.as_str()) {
+        let mut lock = db.lock().expect("lock db");
+        let consumer = match lock.find_by(attr, value.as_str()) {
             Some(record) => L::convert(record),
             None => panic!("No records found for {}!", attr),
         };
