@@ -1,12 +1,14 @@
 use std::convert::From;
 use std::{collections::HashMap, sync::Mutex};
 
+pub type Record<K, V> = HashMap<K, V>;
+
 pub trait Searchable<K, V>
 where
     K: Clone,
     V: Clone,
 {
-    fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<K, V>>;
+    fn find_by(&mut self, attr: &str, value: &str) -> Option<&Record<K, V>>;
 }
 
 pub trait ModelAble<K, V>
@@ -14,7 +16,7 @@ where
     K: Clone,
     V: Clone,
 {
-    fn get_by_attr<D: Searchable<K, V>, S: From<HashMap<K, V>>>(
+    fn get_by_attr<D: Searchable<K, V>, S: From<Record<K, V>>>(
         db: &Mutex<D>,
         attr: &str,
         value: String,
@@ -71,7 +73,7 @@ pub mod file_db {
     fn create_flat_table(
         columns: Vec<String>,
         rows: Vec<Vec<String>>,
-    ) -> Vec<HashMap<String, String>> {
+    ) -> Vec<Record<String, String>> {
         let mut objects = vec![];
         for row in rows.iter() {
             let mut row_object = HashMap::new();
@@ -85,14 +87,14 @@ pub mod file_db {
         objects
     }
 
-    pub fn read(table_name: &str) -> Vec<HashMap<String, String>> {
+    pub fn read(table_name: &str) -> Vec<Record<String, String>> {
         let table = read_from_file(table_name);
         let columns = get_column_names(&table);
         let rows = get_records(&table);
         return create_flat_table(columns, rows);
     }
 
-    pub fn read_from_string(content: &String) -> Vec<HashMap<String, String>> {
+    pub fn read_from_string(content: &String) -> Vec<Record<String, String>> {
         let columns = get_column_names(content);
         let rows = get_records(content);
         return create_flat_table(columns, rows);
@@ -100,7 +102,7 @@ pub mod file_db {
     #[derive(Clone)]
     pub struct FlatTable<K, V> {
         pub table_name: String,
-        pub items: Vec<HashMap<K, V>>,
+        pub items: Vec<Record<K, V>>,
         source: u8,
         raw: String,
     }
@@ -135,7 +137,7 @@ pub mod file_db {
     }
 
     impl super::Searchable<String, String> for FlatTable<String, String> {
-        fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<String, String>> {
+        fn find_by(&mut self, attr: &str, value: &str) -> Option<&Record<String, String>> {
             self.refresh();
             self.items.iter().find(|record| match record.get(attr) {
                 Some(a) => a == value,

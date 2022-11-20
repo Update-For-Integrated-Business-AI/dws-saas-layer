@@ -1,7 +1,8 @@
 use std::convert::From;
 
-use std::{collections::HashMap, sync::Mutex};
+use std::{sync::Mutex};
 
+use crate::db::Record;
 use crate::db::{file_db::FlatTable, ModelAble};
 
 use super::Consumer;
@@ -40,8 +41,8 @@ impl FlatConsumerList {
 
 impl ModelAble<String, String> for FlatConsumerList {}
 
-impl From<HashMap<String, String>> for Consumer {
-    fn from(map: HashMap<String, String>) -> Self {
+impl From<Record<String, String>> for Consumer {
+    fn from(map: Record<String, String>) -> Self {
         return match (map.get("id"), map.get("quota"), map.get("access_token")) {
             (Some(id), Some(quota), Some(access_token)) => Consumer {
                 id: id.parse::<u32>().unwrap(),
