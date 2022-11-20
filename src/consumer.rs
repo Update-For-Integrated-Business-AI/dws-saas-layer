@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 pub mod consumer_list;
 
+#[derive(Debug, Clone)]
 pub struct Consumer {
     pub id: u32,
     pub quota: u128,
