@@ -31,7 +31,7 @@ fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![index, delay])
-        .manage(ConsumerList { consumers })
+        // .manage(ConsumerList { consumers })
 }
 
 
