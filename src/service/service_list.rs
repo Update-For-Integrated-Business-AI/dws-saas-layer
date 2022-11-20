@@ -9,9 +9,9 @@ pub struct ServiceList<D> {
     pub services: Vec<Service>,
 }
 
-type FlatServiceList<'a> = ServiceList<FlatTable<String, String>>;
+type FlatServiceList = ServiceList<FlatTable<String, String>>;
 
-impl<'a> FlatServiceList<'a> {
+impl<'a> FlatServiceList {
     pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         ServiceList {
             db: db,
@@ -36,9 +36,9 @@ impl<'a> FlatServiceList<'a> {
     }
 }
 
-impl ModelAble<Service, String, String> for FlatServiceList<'_> {}
+impl ModelAble<Service, String, String> for FlatServiceList {}
 
-impl ToStruct<Service, HashMap<String, String>> for FlatServiceList<'_> {
+impl ToStruct<Service, HashMap<String, String>> for FlatServiceList {
     fn convert(data: &HashMap<String, String>) -> Service {
         return match (
             data.get("id"),

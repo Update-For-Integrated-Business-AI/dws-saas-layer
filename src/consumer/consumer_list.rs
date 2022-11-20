@@ -9,9 +9,9 @@ pub struct ConsumerList<D> {
     pub consumers: Vec<Consumer>,
 }
 
-type FlatConsumerList<'a> = ConsumerList<FlatTable<String, String>>;
+type FlatConsumerList = ConsumerList<FlatTable<String, String>>;
 
-impl<'a> FlatConsumerList<'a> {
+impl FlatConsumerList {
     pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         ConsumerList {
             db: db,
@@ -36,10 +36,10 @@ impl<'a> FlatConsumerList<'a> {
     }
 }
 
-impl ModelAble<Consumer, String, String> for FlatConsumerList<'_> {}
+impl ModelAble<Consumer, String, String> for FlatConsumerList {}
 
 
-impl ToStruct<Consumer, HashMap<String, String>> for FlatConsumerList<'_> {
+impl ToStruct<Consumer, HashMap<String, String>> for FlatConsumerList {
     fn convert(data: &HashMap<String, String>) -> Consumer {
         return match (data.get("id"), data.get("quota"), data.get("access_token")) {
             (Some(id), Some(quota), Some(access_token)) => Consumer {
