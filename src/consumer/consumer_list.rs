@@ -1,35 +1,35 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Mutex};
 
 use crate::db::{file_db::FlatTable, ToStruct, ModelAble};
 
 use super::Consumer;
 
-pub struct ConsumerList<'a, D> {
-    db: &'a mut D,
+pub struct ConsumerList<D> {
+    db: Mutex<D>,
     pub consumers: Vec<Consumer>,
 }
 
-type FlatConsumerList<'a> = ConsumerList<'a, FlatTable<String, String>>;
+type FlatConsumerList<'a> = ConsumerList<FlatTable<String, String>>;
 
 impl<'a> FlatConsumerList<'a> {
-    pub fn new(db: &'a mut FlatTable<String, String>) -> Self {
+    pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         ConsumerList {
             db: db,
             consumers: vec![],
         }
     }
 
-    pub fn get_by_id(&mut self, id: u32) -> Option<Consumer> {
+    pub fn get_by_id(&self, id: u32) -> Option<Consumer> {
         ConsumerList::get_by_attr::<FlatTable<String, String>, FlatConsumerList>(
-            self.db,
+            &self.db,
             "id",
             id.to_string(),
         )
     }
 
-    pub fn get_by_access_token(&mut self, access_token: &str) -> Option<Consumer> {
+    pub fn get_by_access_token(&self, access_token: &str) -> Option<Consumer> {
         ConsumerList::get_by_attr::<FlatTable<String, String>, FlatConsumerList>(
-            self.db,
+            &self.db,
             "access_token",
             access_token.to_string(),
         )
@@ -67,8 +67,8 @@ mod tests {
         "
         .to_string();
 
-        let mut db = FlatTable::new_from_string(table);
-        let mut consumer_list = ConsumerList::new(&mut db);
+        let db = Mutex::new(FlatTable::new_from_string(table));
+        let consumer_list = ConsumerList::new(db);
 
         let consumer = consumer_list.get_by_id(id).unwrap();
 
@@ -87,8 +87,8 @@ mod tests {
         "
         .to_string();
 
-        let mut db = FlatTable::new_from_string(table);
-        let mut consumer_list = ConsumerList::new(&mut db);
+        let db = Mutex::new(FlatTable::new_from_string(table));
+        let consumer_list = ConsumerList::new(db);
         let consumer = consumer_list.get_by_access_token(access_token).unwrap();
 
         assert_eq!(consumer.id, id);

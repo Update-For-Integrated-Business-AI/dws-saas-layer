@@ -1,35 +1,35 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Mutex};
 
 use crate::db::{file_db::FlatTable, ModelAble, ToStruct};
 
 use super::Service;
 
-pub struct ServiceList<'a, D> {
-    db: &'a mut D,
+pub struct ServiceList<D> {
+    db: Mutex<D>,
     pub services: Vec<Service>,
 }
 
-type FlatServiceList<'a> = ServiceList<'a, FlatTable<String, String>>;
+type FlatServiceList<'a> = ServiceList<FlatTable<String, String>>;
 
 impl<'a> FlatServiceList<'a> {
-    pub fn new(db: &'a mut FlatTable<String, String>) -> Self {
+    pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         ServiceList {
             db: db,
             services: vec![],
         }
     }
 
-    pub fn get_by_id(&mut self, id: u128) -> Option<Service> {
+    pub fn get_by_id(&self, id: u128) -> Option<Service> {
         ServiceList::get_by_attr::<FlatTable<String, String>, FlatServiceList>(
-            self.db,
+            &self.db,
             "id",
             id.to_string(),
         )
     }
 
-    pub fn get_by_slug(&mut self, slug: &str) -> Option<Service> {
+    pub fn get_by_slug(&self, slug: &str) -> Option<Service> {
         ServiceList::get_by_attr::<FlatTable<String, String>, FlatServiceList>(
-            self.db,
+            &self.db,
             "slug",
             slug.to_string(),
         )
@@ -76,6 +76,8 @@ impl ToStruct<Service, HashMap<String, String>> for FlatServiceList<'_> {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Mutex;
+
     use super::*;
 
     #[test]
@@ -89,8 +91,8 @@ mod tests {
         "
         .to_string();
 
-        let mut db = FlatTable::new_from_string(table);
-        let mut service_list = ServiceList::new(&mut db);
+        let db = Mutex::new(FlatTable::new_from_string(table));
+        let service_list = ServiceList::new(db);
 
         let service = service_list.get_by_id(id).unwrap();
 
@@ -109,8 +111,8 @@ mod tests {
         "
         .to_string();
 
-        let mut db = FlatTable::new_from_string(table);
-        let mut service_list = ServiceList::new(&mut db);
+        let db = Mutex::new(FlatTable::new_from_string(table));
+        let service_list = ServiceList::new(db);
         let service = service_list.get_by_slug(slug).unwrap();
 
         assert_eq!(service.id, id);
