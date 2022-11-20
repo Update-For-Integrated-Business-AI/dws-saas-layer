@@ -1,0 +1,3 @@
+id, name, slug, version, status, base_url, price, requests
+1, Service A, service_a, v1.0.0, 1, http://128.0.0.1/123/45, 2, 10 
+2, Service B, service_b, v1.0.0, 2, http://129.0.0.1/123/45, 4, 109 

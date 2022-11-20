@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
+pub mod service_list;
+
 pub struct Service {
+    pub id: u128,
     pub name: String,
     pub requests: u128,
     pub slug: String,
@@ -13,6 +16,7 @@ pub struct Service {
 impl Service {
     pub fn fake(attr: &HashMap<&str, &str>) -> Service {
         Service {
+            id: attr.get("id").unwrap_or(&"1").parse::<u128>().unwrap(),
             name: attr.get("name").unwrap_or(&"default_service").to_string(),
             requests: attr.get("quota").unwrap_or(&"10").parse::<u128>().unwrap(),
             slug: attr.get("slug").unwrap_or(&"service_slug").to_string(),
