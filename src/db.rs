@@ -1,12 +1,20 @@
-use std::{collections::HashMap, sync::Mutex};
 use std::convert::From;
+use std::{collections::HashMap, sync::Mutex};
 
-pub trait Searchable<K, V> {
-    fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<String, String>>;
+pub trait Searchable<K, V>
+where
+    K: Clone,
+    V: Clone,
+{
+    fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<K, V>>;
 }
 
-pub trait ModelAble<K, V> {
-    fn get_by_attr<D: Searchable<K, V>, S: From<HashMap<String, String>>>(
+pub trait ModelAble<K, V>
+where
+    K: Clone,
+    V: Clone,
+{
+    fn get_by_attr<D: Searchable<K, V>, S: From<HashMap<K, V>>>(
         db: &Mutex<D>,
         attr: &str,
         value: String,
