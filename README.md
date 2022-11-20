@@ -43,7 +43,7 @@ UWS Software as a Service (SaaS) API Gateway is a system that does the following
 The system is comprised of the following structures:
 
 - [x] **Server**: authenticates & processes incoming *requests*.
-- [ ] **Data Layer**: accesses, queries and persists *data*.
+- [x] **Data Layer**: accesses, queries and persists *data*.
 - [ ] **Router**: routes requests to their correct destination inside a private network using a configurable map.
 - [x] **Authenticator**: controls access of request consumers based on their credentials.
 - [ ] **Biller**: Handles quota operations & subscriptions.

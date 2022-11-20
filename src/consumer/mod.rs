@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 pub mod consumer_list;
 
+#[derive(Debug, Clone)]
 pub struct Consumer {
     pub id: u32,
     pub quota: u128,
@@ -9,7 +10,7 @@ pub struct Consumer {
 }
 
 impl Consumer {
-    pub fn new(attr: &HashMap<&str, &str>) -> Consumer {
+    pub fn fake(attr: &HashMap<&str, &str>) -> Consumer {
         Consumer {
             id: attr.get("id").unwrap_or(&"1").parse::<u32>().unwrap(),
             quota: attr.get("quota").unwrap_or(&"10").parse::<u128>().unwrap(),
@@ -27,7 +28,7 @@ impl Consumer {
         Some(())
     }
 
-    fn add_quota(&mut self, amount: u128) -> Option<()> {
+    pub fn add_quota(&mut self, amount: u128) -> Option<()> {
         self.quota += amount;
 
         Some(())
@@ -39,7 +40,7 @@ mod tests {
     use super::*;
     #[test]
     fn decrease_quota() {
-        let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "128")]));
+        let mut consumer: Consumer = Consumer::fake(&HashMap::from([("quota", "128")]));
 
         consumer.decrease_quota(1);
         consumer.decrease_quota(2);
@@ -49,7 +50,7 @@ mod tests {
 
     #[test]
     fn do_not_decrease_if_not_enough_quota() {
-        let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
+        let mut consumer: Consumer = Consumer::fake(&HashMap::from([("quota", "1")]));
 
         match consumer.decrease_quota(2) {
             Some(_) => (),
@@ -61,7 +62,7 @@ mod tests {
 
     #[test]
     fn add_quota() {
-        let mut consumer: Consumer = Consumer::new(&HashMap::from([("quota", "1")]));
+        let mut consumer: Consumer = Consumer::fake(&HashMap::from([("quota", "1")]));
 
         match consumer.add_quota(100) {
             Some(_) => (),

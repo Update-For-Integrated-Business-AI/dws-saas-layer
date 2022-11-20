@@ -1,61 +1,37 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::http::Status;
-use rocket::request::{FromRequest, Outcome, Request};
-use rocket::State;
-use std::collections::HashMap;
-use sass_layer::Consumer;
+use std::sync::{Mutex};
 
-use sass_layer::consumer::{self, consumer_list::ConsumerList};
+use sass_layer::consumer::{consumer_list::ConsumerList};
 
-#[derive(Debug)]
-struct ApiKey<'r>(&'r str);
+use sass_layer::db::file_db::FlatTable;
+use sass_layer::guards::{HostHeader, ApiKey};
 
-#[derive(Debug)]
-enum ApiKeyError {
-    Missing,
-    Invalid,
-}
 
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for ApiKey<'r> {
-    type Error = ApiKeyError;
-
-    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        /// Returns true if `key` is a valid API key string.
-        async fn is_valid(req: &Request<'_>, key: &str) -> bool {
-            let consumer_list = req.guard::<&State<ConsumerList>>().await.unwrap();
-            match consumer_list.get_by_access_token(key) {
-                Some(_) => true,
-                None => false,
-            }
-        }
-
-        match req.headers().get_one("x-api-key") {
-            None => Outcome::Failure((Status::Unauthorized, ApiKeyError::Missing)),
-            Some(key) if is_valid(req, key).await => Outcome::Success(ApiKey(key)),
-            Some(_) => Outcome::Failure((Status::Unauthorized, ApiKeyError::Invalid)),
-        }
-    }
-}
 
 #[get("/")]
-fn index(key: ApiKey) -> &'static str {
-    "Hello, world!"
+fn index(_key: ApiKey, _host: HostHeader, ) -> String{
+    format!("Hello, world!")
+}
+
+use rocket::tokio::time::{sleep, Duration};
+
+#[get("/delay/<seconds>")]
+async fn delay(seconds: u64) -> String {
+    sleep(Duration::from_secs(seconds)).await;
+    format!("Waited for {} seconds", seconds)
 }
 
 #[launch]
 fn rocket() -> _ {
-    let consumers = vec![Consumer::new(&HashMap::from([
-        ("id", "1"),
-        ("access_token", "user-1"),
-    ]))];
+    let db = Mutex::new(FlatTable::new("consumers".to_string()));
 
     rocket::build()
-        .mount("/", routes![index])
-        .manage(ConsumerList { consumers })
+        .mount("/", routes![index, delay])
+        .manage(ConsumerList::new(db))
 }
+
 
 #[cfg(test)]
 mod test {

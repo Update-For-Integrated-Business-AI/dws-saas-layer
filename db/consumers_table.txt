@@ -1,0 +1,3 @@
+id, quota, access_token
+1, 120, A-1
+2, 130, user-1

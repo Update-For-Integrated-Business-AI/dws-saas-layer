@@ -1,8 +1,8 @@
 pub mod consumer;
+pub mod guards;
 pub mod product;
-
-use std::collections::HashMap;
-
+pub mod service;
+pub mod db;
 pub use crate::consumer::Consumer;
 
 #[cfg(test)]
@@ -12,7 +12,7 @@ mod tests {
 
     #[test]
     fn successful_request() {
-        let mut consumer = Consumer::new(&HashMap::from([("quota", "2")]));
+        let mut consumer = Consumer::fake(&HashMap::from([("quota", "2")]));
 
         let mut product = product::Product {
             price: 1,
@@ -27,7 +27,7 @@ mod tests {
     }
     #[test]
     fn failed_request() {
-        let mut consumer = Consumer::new(&HashMap::from([("quota", "2")]));
+        let mut consumer = Consumer::fake(&HashMap::from([("quota", "2")]));
 
         let mut product = product::Product {
             price: 5,
