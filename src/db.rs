@@ -1,7 +1,22 @@
 use std::collections::HashMap;
 
 pub trait Searchable<K, V> {
-    fn find_by(&self, attr: &str, value: &str) -> Option<&HashMap<K, V>>;
+    fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<K, V>>;
+}
+
+pub trait ModelAble<S, K, V> {
+    fn get_by_attr<D: Searchable<K, V>, L: ToStruct<S, HashMap<K, V>>>(
+        mut db: D,
+        attr: &str,
+        value: String,
+    ) -> Option<S> {
+        let consumer = match db.find_by(attr, value.as_str()) {
+            Some(record) => L::convert(record),
+            None => panic!("No records found for {}!", attr),
+        };
+
+        Some(consumer)
+    }
 }
 
 pub trait ToStruct<T, K> {
@@ -72,12 +87,12 @@ pub mod file_db {
         let rows = get_records(content);
         return create_flat_table(columns, rows);
     }
-
+    #[derive(Clone)]
     pub struct FlatTable<K, V> {
         pub table_name: String,
         pub items: Vec<HashMap<K, V>>,
         source: u8,
-        raw: String
+        raw: String,
     }
 
     impl FlatTable<String, String> {
@@ -86,7 +101,7 @@ pub mod file_db {
                 table_name: table_name,
                 items: vec![],
                 source: 1,
-                raw: String::new()
+                raw: String::new(),
             }
         }
 
@@ -95,7 +110,7 @@ pub mod file_db {
                 table_name: "none".to_string(),
                 items: read_from_string(&contents),
                 source: 2,
-                raw: contents
+                raw: contents,
             }
         }
 
@@ -103,14 +118,15 @@ pub mod file_db {
             self.items = match self.source {
                 1 => file_db::read(self.table_name.as_str()),
                 2 => read_from_string(&self.raw),
-                _ => panic!("Invalid source!")
+                _ => panic!("Invalid source!"),
             };
             self
         }
     }
 
     impl super::Searchable<String, String> for FlatTable<String, String> {
-        fn find_by(&self, attr: &str, value: &str) -> Option<&HashMap<String, String>> {
+        fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<String, String>> {
+            self.refresh();
             self.items.iter().find(|record| match record.get(attr) {
                 Some(a) => a == value,
                 None => false,
@@ -189,11 +205,11 @@ pub mod file_db {
             row2_value1, row2_value2, row2_value3",
             );
 
-            let flat_table = FlatTable {
+            let mut flat_table = FlatTable {
                 raw: table.clone(),
                 table_name: "N\\A".to_string(),
                 items: read_from_string(&table),
-                source: 2
+                source: 2,
             };
 
             if let Some(record) = flat_table.find_by("column2", "row2_value2") {
