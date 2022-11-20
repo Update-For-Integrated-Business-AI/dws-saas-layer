@@ -1,6 +1,8 @@
+use std::convert::From;
+
 use std::{collections::HashMap, sync::Mutex};
 
-use crate::db::{file_db::FlatTable, ToStruct, ModelAble};
+use crate::db::{file_db::FlatTable, ModelAble};
 
 use super::Consumer;
 
@@ -20,7 +22,7 @@ impl FlatConsumerList {
     }
 
     pub fn get_by_id(&self, id: u32) -> Option<Consumer> {
-        ConsumerList::get_by_attr::<FlatTable<String, String>, FlatConsumerList>(
+        ConsumerList::get_by_attr::<FlatTable<String, String>, Consumer>(
             &self.db,
             "id",
             id.to_string(),
@@ -28,7 +30,7 @@ impl FlatConsumerList {
     }
 
     pub fn get_by_access_token(&self, access_token: &str) -> Option<Consumer> {
-        ConsumerList::get_by_attr::<FlatTable<String, String>, FlatConsumerList>(
+        ConsumerList::get_by_attr::<FlatTable<String, String>, Consumer>(
             &self.db,
             "access_token",
             access_token.to_string(),
@@ -36,12 +38,11 @@ impl FlatConsumerList {
     }
 }
 
-impl ModelAble<Consumer, String, String> for FlatConsumerList {}
+impl ModelAble<String, String> for FlatConsumerList {}
 
-
-impl ToStruct<Consumer, HashMap<String, String>> for FlatConsumerList {
-    fn convert(data: &HashMap<String, String>) -> Consumer {
-        return match (data.get("id"), data.get("quota"), data.get("access_token")) {
+impl From<HashMap<String, String>> for Consumer {
+    fn from(map: HashMap<String, String>) -> Self {
+        return match (map.get("id"), map.get("quota"), map.get("access_token")) {
             (Some(id), Some(quota), Some(access_token)) => Consumer {
                 id: id.parse::<u32>().unwrap(),
                 quota: quota.parse::<u128>().unwrap(),
@@ -51,7 +52,6 @@ impl ToStruct<Consumer, HashMap<String, String>> for FlatConsumerList {
         };
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;

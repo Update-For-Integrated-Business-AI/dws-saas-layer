@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Mutex};
 
-use crate::db::{file_db::FlatTable, ModelAble, ToStruct};
+use crate::db::{file_db::FlatTable, ModelAble};
 
 use super::Service;
 
@@ -20,7 +20,7 @@ impl<'a> FlatServiceList {
     }
 
     pub fn get_by_id(&self, id: u128) -> Option<Service> {
-        ServiceList::get_by_attr::<FlatTable<String, String>, FlatServiceList>(
+        ServiceList::get_by_attr::<FlatTable<String, String>, Service>(
             &self.db,
             "id",
             id.to_string(),
@@ -28,7 +28,7 @@ impl<'a> FlatServiceList {
     }
 
     pub fn get_by_slug(&self, slug: &str) -> Option<Service> {
-        ServiceList::get_by_attr::<FlatTable<String, String>, FlatServiceList>(
+        ServiceList::get_by_attr::<FlatTable<String, String>, Service>(
             &self.db,
             "slug",
             slug.to_string(),
@@ -36,19 +36,18 @@ impl<'a> FlatServiceList {
     }
 }
 
-impl ModelAble<Service, String, String> for FlatServiceList {}
-
-impl ToStruct<Service, HashMap<String, String>> for FlatServiceList {
-    fn convert(data: &HashMap<String, String>) -> Service {
+impl ModelAble<String, String> for FlatServiceList {}
+impl From<HashMap<String, String>> for Service {
+    fn from(map: HashMap<String, String>) -> Self {
         return match (
-            data.get("id"),
-            data.get("requests"),
-            data.get("name"),
-            data.get("slug"),
-            data.get("version"),
-            data.get("status"),
-            data.get("base_url"),
-            data.get("price"),
+            map.get("id"),
+            map.get("requests"),
+            map.get("name"),
+            map.get("slug"),
+            map.get("version"),
+            map.get("status"),
+            map.get("base_url"),
+            map.get("price"),
         ) {
             (
                 Some(id),
@@ -82,7 +81,7 @@ mod tests {
 
     #[test]
     fn get_service_by_id() {
-        let id:u128 = 2;
+        let id: u128 = 2;
 
         let table = "\
         id, name, slug, version, status, base_url, price, requests

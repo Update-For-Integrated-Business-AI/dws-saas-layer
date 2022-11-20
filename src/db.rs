@@ -1,18 +1,19 @@
 use std::{collections::HashMap, sync::Mutex};
+use std::convert::From;
 
 pub trait Searchable<K, V> {
-    fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<K, V>>;
+    fn find_by(&mut self, attr: &str, value: &str) -> Option<&HashMap<String, String>>;
 }
 
-pub trait ModelAble<S, K, V> {
-    fn get_by_attr<D: Searchable<K, V>, L: ToStruct<S, HashMap<K, V>>>(
+pub trait ModelAble<K, V> {
+    fn get_by_attr<D: Searchable<K, V>, S: From<HashMap<String, String>>>(
         db: &Mutex<D>,
         attr: &str,
         value: String,
     ) -> Option<S> {
         let mut lock = db.lock().expect("lock db");
         let consumer = match lock.find_by(attr, value.as_str()) {
-            Some(record) => L::convert(record),
+            Some(record) => S::from(record.clone()),
             None => panic!("No records found for {}!", attr),
         };
 
