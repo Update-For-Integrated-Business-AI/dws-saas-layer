@@ -40,13 +40,15 @@ UWS Software as a Service (SaaS) API Gateway is a system that does the following
 ### High-level structures
 > We will not add load balancing features in this initial release to control complexity.
 
-The system is comprised of the following 4 main structures:
-1. **Server**: authenticates & processes incoming *requests*.
-2. **Router**: routes requests to their correct destination inside a private network using a configurable map.
-3. **Authenticator**: controls access of request consumers based on their credentials.
-4. **Biller**: Handles quota operations & subscriptions.
-3. **Logger**: collects traffic data and stores it in either files or databases.
-4. **Scheduler**: controls the flow of inbound and outbound requests.
+The system is comprised of the following structures:
+
+- [x] **Server**: authenticates & processes incoming *requests*.
+- [ ] **Data Layer**: accesses, queries and persists *data*.
+- [ ] **Router**: routes requests to their correct destination inside a private network using a configurable map.
+- [x] **Authenticator**: controls access of request consumers based on their credentials.
+- [ ] **Biller**: Handles quota operations & subscriptions.
+- [ ] **Logger**: collects traffic data and stores it in either files or databases.
+- [ ] **Scheduler**: controls the flow of inbound and outbound requests.
 
 ### Quality Attributes
 The gateway will do its job successfully if the following conditions are met:
