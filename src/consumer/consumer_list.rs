@@ -4,42 +4,42 @@ use crate::db::{file_db::FlatTable, ToStruct, ModelAble};
 
 use super::Consumer;
 
-pub struct ConsumerList<D> {
-    db: D,
+pub struct ConsumerList<'a, D> {
+    db: &'a mut D,
     pub consumers: Vec<Consumer>,
 }
 
-type FlatTableConsumerList = ConsumerList<FlatTable<String, String>>;
+type FlatConsumerList<'a> = ConsumerList<'a, FlatTable<String, String>>;
 
-impl FlatTableConsumerList {
-    pub fn new(db: FlatTable<String, String>) -> Self {
+impl<'a> FlatConsumerList<'a> {
+    pub fn new(db: &'a mut FlatTable<String, String>) -> Self {
         ConsumerList {
             db: db,
             consumers: vec![],
         }
     }
 
-    pub fn get_by_id(&self, id: u32) -> Option<Consumer> {
-        ConsumerList::get_by_attr::<FlatTable<String, String>, FlatTableConsumerList>(
-            self.db.clone(),
+    pub fn get_by_id(&mut self, id: u32) -> Option<Consumer> {
+        ConsumerList::get_by_attr::<FlatTable<String, String>, FlatConsumerList>(
+            self.db,
             "id",
             id.to_string(),
         )
     }
 
-    pub fn get_by_access_token(&self, access_token: &str) -> Option<Consumer> {
-        ConsumerList::get_by_attr::<FlatTable<String, String>, FlatTableConsumerList>(
-            self.db.clone(),
+    pub fn get_by_access_token(&mut self, access_token: &str) -> Option<Consumer> {
+        ConsumerList::get_by_attr::<FlatTable<String, String>, FlatConsumerList>(
+            self.db,
             "access_token",
             access_token.to_string(),
         )
     }
 }
 
-impl ModelAble<Consumer, String, String> for FlatTableConsumerList {}
+impl ModelAble<Consumer, String, String> for FlatConsumerList<'_> {}
 
 
-impl ToStruct<Consumer, HashMap<String, String>> for FlatTableConsumerList {
+impl ToStruct<Consumer, HashMap<String, String>> for FlatConsumerList<'_> {
     fn convert(data: &HashMap<String, String>) -> Consumer {
         return match (data.get("id"), data.get("quota"), data.get("access_token")) {
             (Some(id), Some(quota), Some(access_token)) => Consumer {
@@ -67,8 +67,8 @@ mod tests {
         "
         .to_string();
 
-        let db = FlatTable::new_from_string(table);
-        let consumer_list = ConsumerList::new(db);
+        let mut db = FlatTable::new_from_string(table);
+        let mut consumer_list = ConsumerList::new(&mut db);
 
         let consumer = consumer_list.get_by_id(id).unwrap();
 
@@ -87,8 +87,8 @@ mod tests {
         "
         .to_string();
 
-        let db = FlatTable::new_from_string(table);
-        let consumer_list = ConsumerList::new(db);
+        let mut db = FlatTable::new_from_string(table);
+        let mut consumer_list = ConsumerList::new(&mut db);
         let consumer = consumer_list.get_by_access_token(access_token).unwrap();
 
         assert_eq!(consumer.id, id);

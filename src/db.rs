@@ -6,7 +6,7 @@ pub trait Searchable<K, V> {
 
 pub trait ModelAble<S, K, V> {
     fn get_by_attr<D: Searchable<K, V>, L: ToStruct<S, HashMap<K, V>>>(
-        mut db: D,
+        db: &mut D,
         attr: &str,
         value: String,
     ) -> Option<S> {
