@@ -4,7 +4,11 @@ pub trait Searchable<K, V> {
     fn find_by(&self, attr: &str, value: &str) -> Option<&HashMap<K, V>>;
 }
 
-mod file_db {
+pub trait ToStruct<T, K> {
+    fn convert(data: &K) -> T;
+}
+
+pub mod file_db {
     use super::*;
     use std::{collections::HashMap, fs};
 
@@ -69,13 +73,39 @@ mod file_db {
         return create_flat_table(columns, rows);
     }
 
-    struct FlatTable<K, V> {
-        items: Vec<HashMap<K, V>>,
+    pub struct FlatTable<K, V> {
+        pub table_name: String,
+        pub items: Vec<HashMap<K, V>>,
+        source: u8,
+        raw: String
     }
 
     impl FlatTable<String, String> {
-        fn new(&mut self, table_name: &str) {
-            self.items = file_db::read(table_name);
+        pub fn new(table_name: String) -> Self {
+            FlatTable {
+                table_name: table_name,
+                items: vec![],
+                source: 1,
+                raw: String::new()
+            }
+        }
+
+        pub fn new_from_string(contents: String) -> Self {
+            FlatTable {
+                table_name: "none".to_string(),
+                items: read_from_string(&contents),
+                source: 2,
+                raw: contents
+            }
+        }
+
+        pub fn refresh(&mut self) -> &Self {
+            self.items = match self.source {
+                1 => file_db::read(self.table_name.as_str()),
+                2 => read_from_string(&self.raw),
+                _ => panic!("Invalid source!")
+            };
+            self
         }
     }
 
@@ -160,18 +190,22 @@ mod file_db {
             );
 
             let flat_table = FlatTable {
-                items: read_from_string(&table)
+                raw: table.clone(),
+                table_name: "N\\A".to_string(),
+                items: read_from_string(&table),
+                source: 2
             };
 
             if let Some(record) = flat_table.find_by("column2", "row2_value2") {
-                assert_eq!(record, &HashMap::from([
-                    ("column1".to_string(), "row2_value1".to_string()),
-                    ("column2".to_string(), "row2_value2".to_string()),
-                    ("column3".to_string(), "row2_value3".to_string())
-                ]))
+                assert_eq!(
+                    record,
+                    &HashMap::from([
+                        ("column1".to_string(), "row2_value1".to_string()),
+                        ("column2".to_string(), "row2_value2".to_string()),
+                        ("column3".to_string(), "row2_value3".to_string())
+                    ])
+                )
             }
-
-
         }
     }
 }
