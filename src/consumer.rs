@@ -28,7 +28,7 @@ impl Consumer {
         Some(())
     }
 
-    fn add_quota(&mut self, amount: u128) -> Option<()> {
+    pub fn add_quota(&mut self, amount: u128) -> Option<()> {
         self.quota += amount;
 
         Some(())
