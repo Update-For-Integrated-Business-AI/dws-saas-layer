@@ -3,6 +3,7 @@ pub mod guards;
 pub mod product;
 pub mod service;
 pub mod db;
+pub mod subscriber;
 pub use crate::consumer::Consumer;
 
 #[cfg(test)]
