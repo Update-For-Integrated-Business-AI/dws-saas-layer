@@ -9,6 +9,8 @@ where
     V: Clone,
 {
     fn find_by(&mut self, attr: &str, value: &str) -> Option<&Record<K, V>>;
+
+    fn get_table_name(&self) -> &str;
 }
 
 pub trait ModelAble<K, V>
@@ -24,7 +26,7 @@ where
         let mut lock = db.lock().expect("lock db");
         let consumer = match lock.find_by(attr, value.as_str()) {
             Some(record) => S::from(record.clone()),
-            None => panic!("No records found for {}!", attr),
+            None => panic!("No records found in {} for {} -> {}!", lock.get_table_name(), attr, value),
         };
 
         Some(consumer)
@@ -121,7 +123,7 @@ pub mod file_db {
 
         pub fn new_from_string(contents: String) -> Self {
             FlatTable {
-                table_name: "none".to_string(),
+                table_name: "from_string".to_string(),
                 items: read_from_string(&contents),
                 source: 2,
                 raw: contents,
@@ -145,6 +147,10 @@ pub mod file_db {
                 Some(a) => a == value,
                 None => false,
             })
+        }
+
+        fn get_table_name(&self) -> &str {
+            &self.table_name
         }
     }
 

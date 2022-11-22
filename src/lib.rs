@@ -4,6 +4,7 @@ pub mod product;
 pub mod service;
 pub mod db;
 pub mod subscriber;
+pub mod request;
 pub use crate::consumer::Consumer;
 
 #[cfg(test)]
