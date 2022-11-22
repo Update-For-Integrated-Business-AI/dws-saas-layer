@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Mutex};
 
-use crate::db::{file_db::FlatTable, ModelAble};
+use crate::db::{file_db::{FlatTable, get_table_instance}, ModelAble};
 
 use super::Service;
 
@@ -48,6 +48,7 @@ impl From<HashMap<String, String>> for Service {
             map.get("status"),
             map.get("base_url"),
             map.get("price"),
+            map.get("product"),
         ) {
             (
                 Some(id),
@@ -58,6 +59,7 @@ impl From<HashMap<String, String>> for Service {
                 Some(status),
                 Some(base_url),
                 Some(price),
+                Some(product_id),
             ) => Service {
                 id: id.parse::<u128>().unwrap(),
                 requests: requests.parse::<u128>().unwrap(),
@@ -67,6 +69,10 @@ impl From<HashMap<String, String>> for Service {
                 version: version.clone(),
                 status: status.parse::<u32>().unwrap(),
                 price: price.parse::<u128>().unwrap(),
+                product: Service::fetch_product(
+                    get_table_instance("products"), // this is not testable
+                    product_id.parse::<u128>().unwrap(),
+                )
             },
             _ => panic!("Can't convert!"),
         };
@@ -84,9 +90,9 @@ mod tests {
         let id: u128 = 2;
 
         let table = "\
-        id, name, slug, version, status, base_url, price, requests
-        1, Service A, service_a, v1.0.0, 1, http://128.0.0.1/123/45, 2, 10 
-        2, Service B, service_a, v1.0.0, 2, http://129.0.0.1/123/45, 4, 109 
+        id, name, slug, version, status, base_url, price, requests, product
+        1, Service A, service_a, v1.0.0, 1, http://128.0.0.1/123/45, 2, 10, 1
+        2, Service B, service_a, v1.0.0, 2, http://129.0.0.1/123/45, 4, 109, 2
         "
         .to_string();
 
@@ -104,9 +110,9 @@ mod tests {
         let id = 2;
 
         let table = "\
-        id, name, slug, version, status, base_url, price, requests
-        1, Service A, service_a, v1.0.0, 1, http://128.0.0.1/123/45, 2, 10 
-        2, Service B, service_b, v1.0.0, 2, http://129.0.0.1/123/45, 4, 109 
+        id, name, slug, version, status, base_url, price, requests, product
+        1, Service A, service_a, v1.0.0, 1, http://128.0.0.1/123/45, 2, 10, 1
+        2, Service B, service_b, v1.0.0, 2, http://129.0.0.1/123/45, 4, 109, 2
         "
         .to_string();
 
