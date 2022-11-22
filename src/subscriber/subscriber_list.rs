@@ -1,6 +1,9 @@
-use std::{collections::HashMap, sync::Mutex};
+use std::{sync::Mutex};
 
-use crate::{db::{Record, file_db::FlatTable, ModelAble}};
+use crate::db::{
+    file_db::{get_table_instance, FlatTable},
+    ModelAble, Record,
+};
 
 use super::{Subscriber, Subscription};
 
@@ -39,19 +42,20 @@ impl From<Record<String, String>> for Subscription {
             map.get("quota"),
             map.get("expiry_date"),
         ) {
-            (Some(id), Some(name), Some(status), Some(price), Some(quota), Some(expiry_date)) => Subscription {
-                id: id.parse::<u128>().unwrap(),
-                name: name.clone(),
-                status: status.parse::<u8>().unwrap(),
-                price: price.parse::<u128>().unwrap(),
-                quota: quota.parse::<u128>().unwrap(),
-                expiry_date: expiry_date.clone(),
-            },
+            (Some(id), Some(name), Some(status), Some(price), Some(quota), Some(expiry_date)) => {
+                Subscription {
+                    id: id.parse::<u128>().unwrap(),
+                    name: name.clone(),
+                    status: status.parse::<u8>().unwrap(),
+                    price: price.parse::<u128>().unwrap(),
+                    quota: quota.parse::<u128>().unwrap(),
+                    expiry_date: expiry_date.clone(),
+                }
+            }
             _ => panic!("Can't convert! Invalid Structure. "),
         };
     }
 }
-
 
 pub type FlatSubscriberList = SubscriberList<FlatTable<String, String>>;
 
@@ -81,27 +85,24 @@ impl ModelAble<String, String> for FlatSubscriberList {}
 
 impl From<Record<String, String>> for Subscriber {
     fn from(map: Record<String, String>) -> Self {
-        return match (
-            map.get("id"),
-            map.get("name"),
-            map.get("subscription"),
-        ) {
-            (Some(id), Some(name), Some(_subscription)) => Subscriber {
+        return match (map.get("id"), map.get("name"), map.get("subscription")) {
+            (Some(id), Some(name), Some(subscription_id)) => Subscriber {
                 id: id.parse::<u128>().unwrap(),
                 name: name.clone(),
-                subscription: super::Subscription::fake(&HashMap::new()),
+                subscription: Subscriber::fetch_subscription(
+                    get_table_instance("subscriptions"), // this is not testable
+                    subscription_id.parse::<u128>().unwrap(),
+                ),
             },
             _ => panic!("Can't convert!"),
         };
     }
 }
 
-
-
 #[cfg(test)]
 mod tests {
-    use std::sync::Mutex;
     use super::*;
+    use std::sync::Mutex;
 
     #[test]
     fn get_subscriber_by_id() {
@@ -131,7 +132,7 @@ mod tests {
         1, Startup 500, 1, 10000, 50, 2022-10-01 00:00:00
         2, Golden 50, 2, 50000, 10, 2022-10-01 00:00:00
         "
-            .to_string();
+        .to_string();
 
         let db = Mutex::new(FlatTable::new_from_string(table));
         let subscription_list = SubscriptionList::new(db);

@@ -1,6 +1,6 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Mutex};
 
-use crate::db::file_db::get_database_instance;
+use crate::db::file_db::{get_table_instance, FlatTable};
 
 use self::subscriber_list::SubscriptionList;
 
@@ -42,8 +42,10 @@ impl Subscriber {
         Subscriber {
             id,
             name,
-            subscription: Subscriber::fetch_subscription(subscription_id)
-                .expect(&format!("Subscription with id:{subscription_id} is not found!")),
+            subscription: Subscriber::fetch_subscription(
+                get_table_instance("subscriptions"),
+                subscription_id,
+            ),
         }
     }
     pub fn fake(attr: &HashMap<&str, &str>) -> Subscriber {
@@ -59,9 +61,16 @@ impl Subscriber {
         }
     }
 
-    pub fn fetch_subscription(subscription_id: u128) -> Option<Subscription> {
-        let subscription_list = SubscriptionList::new(get_database_instance("subscription"));
-        subscription_list.get_by_id(subscription_id)
+    pub fn fetch_subscription(
+        db: Mutex<FlatTable<String, String>>,
+        subscription_id: u128,
+    ) -> Subscription {
+        let subscription_list = SubscriptionList::new(db);
+        subscription_list
+            .get_by_id(subscription_id)
+            .expect(&format!(
+                "Subscription with id:{subscription_id} is not found!"
+            ))
     }
 }
 
@@ -69,7 +78,7 @@ impl Subscriber {
 mod tests {
     use std::collections::HashMap;
 
-    use super::{Subscriber};
+    use super::Subscriber;
 
     #[test]
     fn test_fetching_subscription() {
