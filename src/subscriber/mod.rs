@@ -29,6 +29,22 @@ impl Subscription {
                 .to_string(),
         }
     }
+
+    pub fn decrease_quota(&mut self, amount: u128) -> Option<()> {
+        if amount > self.quota {
+            return None;
+        }
+
+        self.quota -= amount;
+
+        Some(())
+    }
+
+    pub fn add_quota(&mut self, amount: u128) -> Option<()> {
+        self.quota += amount;
+
+        Some(())
+    }
 }
 
 pub struct Subscriber {
@@ -78,7 +94,7 @@ impl Subscriber {
 mod tests {
     use std::collections::HashMap;
 
-    use super::Subscriber;
+    use super::{Subscriber, Subscription};
 
     #[test]
     fn test_fetching_subscription() {
@@ -88,5 +104,39 @@ mod tests {
             ("subscription", id.to_string().as_str()),
         ]));
         assert_eq!(subscriber.subscription.id, id)
+    }
+
+    #[test]
+    fn decrease_quota() {
+        let mut subscription: Subscription = Subscription::fake(&HashMap::from([("quota", "128")]));
+
+        subscription.decrease_quota(1);
+        subscription.decrease_quota(2);
+
+        assert_eq!(subscription.quota, 125)
+    }
+
+    #[test]
+    fn do_not_decrease_if_not_enough_quota() {
+        let mut subscription: Subscription = Subscription::fake(&HashMap::from([("quota", "1")]));
+
+        match subscription.decrease_quota(2) {
+            Some(_) => (),
+            None => println!("Not enough credit."),
+        }
+
+        assert_eq!(subscription.quota, 1)
+    }
+
+    #[test]
+    fn add_quota() {
+        let mut subscription: Subscription = Subscription::fake(&HashMap::from([("quota", "1")]));
+
+        match subscription.add_quota(100) {
+            Some(_) => (),
+            None => println!("Couldn't add quota."),
+        }
+
+        assert_eq!(subscription.quota, 101)
     }
 }
