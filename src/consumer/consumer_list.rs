@@ -46,7 +46,6 @@ impl From<Record<String, String>> for Consumer {
         return match (map.get("id"), map.get("quota"), map.get("access_token")) {
             (Some(id), Some(quota), Some(access_token)) => Consumer {
                 id: id.parse::<u32>().unwrap(),
-                quota: quota.parse::<u128>().unwrap(),
                 access_token: access_token.clone(),
             },
             _ => panic!("Can't convert!"),
