@@ -1,0 +1,3 @@
+id, slug, requests
+1, product_a, 10
+2, product_b, 11
