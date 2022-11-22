@@ -5,6 +5,7 @@ use crate::db::file_db::{get_table_instance, FlatTable};
 use self::subscriber_list::SubscriptionList;
 
 pub mod subscriber_list;
+#[derive(Debug, Clone)]
 
 pub struct Subscription {
     pub id: u128,
@@ -46,6 +47,7 @@ impl Subscription {
         Some(())
     }
 }
+#[derive(Debug, Clone)]
 
 pub struct Subscriber {
     pub id: u128,
