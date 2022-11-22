@@ -106,7 +106,9 @@ pub mod file_db {
         source: u8,
         raw: String,
     }
-
+    pub fn get_database_instance(db_name: &str) -> Mutex<FlatTable<String, String>> {
+        Mutex::new(FlatTable::new(db_name.to_string()))
+    }
     impl FlatTable<String, String> {
         pub fn new(table_name: String) -> Self {
             FlatTable {
