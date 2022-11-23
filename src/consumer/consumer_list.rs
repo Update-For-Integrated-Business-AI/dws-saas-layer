@@ -18,7 +18,7 @@ pub type FlatConsumerList = ConsumerList<FlatTable<String, String>>;
 impl FlatConsumerList {
     pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         ConsumerList {
-            db: db,
+            db,
             consumers: vec![],
         }
     }

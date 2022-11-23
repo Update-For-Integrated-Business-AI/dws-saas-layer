@@ -1,7 +1,7 @@
+use crate::consumer::consumer_list::FlatConsumerList;
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 use rocket::State;
-use crate::consumer::consumer_list::{FlatConsumerList};
 #[derive(Debug)]
 pub struct HostHeader<'a>(pub &'a str);
 
@@ -16,8 +16,6 @@ impl<'r> FromRequest<'r> for HostHeader<'r> {
         }
     }
 }
-
-
 
 #[derive(Debug)]
 pub struct ApiKey<'r>(&'r str);
@@ -36,10 +34,7 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
         /// Returns true if `key` is a valid API key string.
         async fn is_valid(req: &Request<'_>, key: &str) -> bool {
             let consumer_list = req.guard::<&State<FlatConsumerList>>().await.unwrap();
-            match consumer_list.get_by_access_token(key) {
-                Some(_) => true,
-                None => false,
-            }
+            consumer_list.get_by_access_token(key).is_some()
         }
 
         match req.headers().get_one("x-api-key") {
@@ -50,9 +45,5 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
     }
 }
 
-
-
 #[cfg(test)]
-mod tests {
-
-}
+mod tests {}

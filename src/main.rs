@@ -1,18 +1,16 @@
 #[macro_use]
 extern crate rocket;
 
-use std::sync::{Mutex};
+use std::sync::Mutex;
 
-use sass_layer::consumer::{consumer_list::ConsumerList};
+use sass_layer::consumer::consumer_list::ConsumerList;
 
 use sass_layer::db::file_db::FlatTable;
-use sass_layer::guards::{HostHeader, ApiKey};
-
-
+use sass_layer::guards::{ApiKey, HostHeader};
 
 #[get("/")]
-fn index(_key: ApiKey, _host: HostHeader, ) -> String{
-    format!("Hello, world!")
+fn index(_key: ApiKey, _host: HostHeader) -> String {
+    "Hello, world!".to_string()
 }
 
 use rocket::tokio::time::{sleep, Duration};
@@ -31,7 +29,6 @@ fn rocket() -> _ {
         .mount("/", routes![index, delay])
         .manage(ConsumerList::new(db))
 }
-
 
 #[cfg(test)]
 mod test {

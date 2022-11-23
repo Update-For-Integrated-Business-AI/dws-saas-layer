@@ -26,7 +26,12 @@ where
         let mut lock = db.lock().expect("lock db");
         let consumer = match lock.find_by(attr, value.as_str()) {
             Some(record) => S::from(record.clone()),
-            None => panic!("No records found in {} for {} -> {}!", lock.get_table_name(), attr, value),
+            None => panic!(
+                "No records found in {} for {} -> {}!",
+                lock.get_table_name(),
+                attr,
+                value
+            ),
         };
 
         Some(consumer)
@@ -42,11 +47,11 @@ pub mod file_db {
     use std::{collections::HashMap, fs};
 
     fn read_from_file(table: &str) -> String {
-        return fs::read_to_string(format!("db/{}_table.txt", table))
-            .expect("Should have been able to read the file");
+        fs::read_to_string(format!("db/{}_table.txt", table))
+            .expect("Should have been able to read the file")
     }
 
-    fn get_column_names(content: &String) -> Vec<String> {
+    fn get_column_names(content: &str) -> Vec<String> {
         return match content.lines().next() {
             Some(first_line) => first_line
                 .split(',')
@@ -56,7 +61,7 @@ pub mod file_db {
         };
     }
 
-    fn get_records(content: &String) -> Vec<Vec<String>> {
+    fn get_records(content: &str) -> Vec<Vec<String>> {
         let mut rows = vec![];
         for line in content.lines().skip(1) {
             // skip header line (header)
@@ -93,13 +98,13 @@ pub mod file_db {
         let table = read_from_file(table_name);
         let columns = get_column_names(&table);
         let rows = get_records(&table);
-        return create_flat_table(columns, rows);
+        create_flat_table(columns, rows)
     }
 
     pub fn read_from_string(content: &String) -> Vec<Record<String, String>> {
         let columns = get_column_names(content);
         let rows = get_records(content);
-        return create_flat_table(columns, rows);
+        create_flat_table(columns, rows)
     }
     #[derive(Clone)]
     pub struct FlatTable<K, V> {
@@ -114,7 +119,7 @@ pub mod file_db {
     impl FlatTable<String, String> {
         pub fn new(table_name: String) -> Self {
             FlatTable {
-                table_name: table_name,
+                table_name,
                 items: vec![],
                 source: 1,
                 raw: String::new(),
