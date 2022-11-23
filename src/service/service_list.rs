@@ -1,6 +1,9 @@
 use std::{collections::HashMap, sync::Mutex};
 
-use crate::db::{file_db::{FlatTable, get_table_instance}, ModelAble};
+use crate::db::{
+    file_db::{get_table_instance, FlatTable},
+    ModelAble,
+};
 
 use super::Service;
 
@@ -11,10 +14,10 @@ pub struct ServiceList<D> {
 
 type FlatServiceList = ServiceList<FlatTable<String, String>>;
 
-impl<'a> FlatServiceList {
+impl FlatServiceList {
     pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         ServiceList {
-            db: db,
+            db,
             services: vec![],
         }
     }
@@ -72,7 +75,7 @@ impl From<HashMap<String, String>> for Service {
                 product: Service::fetch_product(
                     get_table_instance("products"), // this is not testable
                     product_id.parse::<u128>().unwrap(),
-                )
+                ),
             },
             _ => panic!("Can't convert!"),
         };
