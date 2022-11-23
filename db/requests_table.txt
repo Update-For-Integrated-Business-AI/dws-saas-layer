@@ -1,0 +1,4 @@
+id, product_slug, service_slug, service_version, url, status, price, consumer, service
+UUID-1, product_a, service_slug_a, v1.0.0, http://128.0.0.1/123/45, 2, 0, 1, 1
+UUID-2, product_b, service_slug_b, v2.0.0, http://129.0.0.1/123/45, 3, 1, 2, 2
+        

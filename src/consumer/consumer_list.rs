@@ -1,7 +1,9 @@
 use std::convert::From;
 
-use std::{collections::HashMap, sync::Mutex};
+use std::sync::Mutex;
 
+use crate::db::file_db::get_table_instance;
+use crate::db::Record;
 use crate::db::{file_db::FlatTable, ModelAble};
 
 use super::Consumer;
@@ -21,7 +23,7 @@ impl FlatConsumerList {
         }
     }
 
-    pub fn get_by_id(&self, id: u32) -> Option<Consumer> {
+    pub fn get_by_id(&self, id: u128) -> Option<Consumer> {
         ConsumerList::get_by_attr::<FlatTable<String, String>, Consumer>(
             &self.db,
             "id",
@@ -40,13 +42,20 @@ impl FlatConsumerList {
 
 impl ModelAble<String, String> for FlatConsumerList {}
 
-impl From<HashMap<String, String>> for Consumer {
-    fn from(map: HashMap<String, String>) -> Self {
-        return match (map.get("id"), map.get("quota"), map.get("access_token")) {
-            (Some(id), Some(quota), Some(access_token)) => Consumer {
-                id: id.parse::<u32>().unwrap(),
-                quota: quota.parse::<u128>().unwrap(),
+impl From<Record<String, String>> for Consumer {
+    fn from(map: Record<String, String>) -> Self {
+        return match (
+            map.get("id"),
+            map.get("access_token"),
+            map.get("subscriber"),
+        ) {
+            (Some(id), Some(access_token), Some(subscriber_id)) => Consumer {
+                id: id.parse::<u128>().unwrap(),
                 access_token: access_token.clone(),
+                subscriber: Consumer::fetch_subscriber(
+                    get_table_instance("subscribers"),
+                    subscriber_id.parse::<u128>().unwrap(),
+                ),
             },
             _ => panic!("Can't convert!"),
         };
@@ -61,9 +70,9 @@ mod tests {
         let id = 2;
 
         let table = "\
-        id, quota, access_token
-        1, 120, row1_value3
-        2, 130, row2_value3\
+        id, subscriber, access_token
+        1, 1, row1_value3
+        2, 2, row2_value3\
         "
         .to_string();
 
@@ -81,9 +90,9 @@ mod tests {
         let id = 2;
 
         let table = "\
-        id, quota, access_token
-        1, 120, A-1
-        2, 130, A-2\
+        id, subscriber, access_token
+        1, 1, A-1
+        2, 2, A-2\
         "
         .to_string();
 
