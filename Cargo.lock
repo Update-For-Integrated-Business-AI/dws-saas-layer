@@ -989,13 +989,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4501abdff3ae82a1c1b477a17252eb69cee9e66eb915c1abaa4f44d873df9f09"
 
 [[package]]
-name = "sass_layer"
-version = "0.1.0"
-dependencies = [
- "rocket",
-]
-
-[[package]]
 name = "scoped-tls"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1357,6 +1350,13 @@ checksum = "7d3160b73c9a19f7e2939a2fdad446c57c1bbbbf4d919d3213ff1267a580d8b5"
 dependencies = [
  "crypto-common",
  "subtle",
+]
+
+[[package]]
+name = "uws_gateway"
+version = "0.1.0"
+dependencies = [
+ "rocket",
 ]
 
 [[package]]
