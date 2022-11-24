@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  builder:
+    build:
+      dockerfile: ./docker/builder.Dockerfile
+      args:
+        - BUILD_ENV=debug
+    volumes:
+      - ./:/uws_gateway
+      - runner-data:/uws_gateway/target
+    command: bash -c "cargo build"
+
+  runner:
+    build:
+      dockerfile: ./docker/runner.Dockerfile
+      args:
+        - RUNNER_ENV=debug
+    volumes:
+      - runner-data:/uws_gateway/target
+    depends_on:
+      - builder
+    command: bash -c "find . -path *debug/uws_gateway | entr -r uws_gateway/target/debug/uws_gateway"
+
+volumes:
+  runner-data:
