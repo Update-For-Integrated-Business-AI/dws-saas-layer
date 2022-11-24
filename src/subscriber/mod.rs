@@ -86,9 +86,7 @@ impl Subscriber {
         let subscription_list = SubscriptionList::new(db);
         subscription_list
             .get_by_id(subscription_id)
-            .expect(&format!(
-                "Subscription with id:{subscription_id} is not found!"
-            ))
+            .unwrap_or_else(|| panic!("Subscription with id:{subscription_id} is not found!"))
     }
 }
 

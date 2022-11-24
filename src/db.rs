@@ -101,7 +101,7 @@ pub mod file_db {
         create_flat_table(columns, rows)
     }
 
-    pub fn read_from_string(content: &String) -> Vec<Record<String, String>> {
+    pub fn read_from_string(content: &str) -> Vec<Record<String, String>> {
         let columns = get_column_names(content);
         let rows = get_records(content);
         create_flat_table(columns, rows)

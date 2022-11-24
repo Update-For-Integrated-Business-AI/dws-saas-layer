@@ -22,6 +22,7 @@ pub struct Request {
 }
 
 impl Request {
+    #![allow(clippy::too_many_arguments)]
     pub fn new(
         id: String,
         product_slug: String,
@@ -76,14 +77,14 @@ impl Request {
         let consumer_list = ConsumerList::new(db);
         consumer_list
             .get_by_id(consumer_id)
-            .expect(&format!("Consumer with id:{consumer_id} is not found!"))
+            .unwrap_or_else(|| panic!("Consumer with id:{consumer_id} is not found!"))
     }
 
     pub fn fetch_service(db: Mutex<FlatTable<String, String>>, service_id: u128) -> Service {
         let service_list = ServiceList::new(db);
         service_list
             .get_by_id(service_id)
-            .expect(&format!("Service with id:{service_id} is not found!"))
+            .unwrap_or_else(|| panic!("Service with id:{service_id} is not found!"))
     }
 }
 

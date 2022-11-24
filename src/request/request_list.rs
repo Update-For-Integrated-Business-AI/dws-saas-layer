@@ -14,10 +14,10 @@ pub struct RequestList<D> {
 
 type FlatRequestList = RequestList<FlatTable<String, String>>;
 
-impl<'a> FlatRequestList {
+impl FlatRequestList {
     pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         RequestList {
-            db: db,
+            db,
             requests: vec![],
         }
     }
