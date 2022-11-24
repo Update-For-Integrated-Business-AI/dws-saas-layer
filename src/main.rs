@@ -26,6 +26,8 @@ async fn delay(seconds: u64) -> String {
 #[launch]
 fn rocket() -> _ {
     let db = Mutex::new(FlatTable::new("consumers".to_string()));
+    
+    println!("Running server..");
 
     rocket::build()
         .mount("/", routes![index, delay])
