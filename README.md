@@ -9,6 +9,7 @@
 ## Prerequisites
 - Rust (We recommend using [rustup](https://rustup.rs/) installer)
 ## Installation & Development
+
 To install the *gateway* you need to run the following command in your terminal to build project:
 
 ```sh
@@ -38,6 +39,21 @@ You can also re-run tests with every code change
 cargo watch -x test
 ```
 
+### Development using Docker
+Build containers
+```sh
+docker compose -f docker-compose.dev.yml build
+```
+Build the `builder`
+```sh
+docker compose -f docker-compose.dev.yml run --rm builder
+```
+Run the `server`
+```sh
+docker compose -f docker-compose.dev.yml run --rm runner
+```
+
+> The `server` auto-reloads if you run the `builder` and a new debug executable was created.
 ## Concept
 > In this document, I will assume a basic level of Software Engineering and basic knowledge about the Software as a Service (SaaS) model.
 
