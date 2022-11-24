@@ -3,4 +3,8 @@ version: "3"
 services:
   gateway:
     build:
-      dockerfile: ./docker/release.Dockerfile
+      dockerfile: ./docker/release-gnu.Dockerfile
+
+  gateway-musl:
+    build:
+      dockerfile: ./docker/release-musl.Dockerfile
