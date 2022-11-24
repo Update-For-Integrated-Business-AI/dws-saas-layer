@@ -44,7 +44,7 @@ Build containers
 ```sh
 docker compose -f docker-compose.dev.yml build
 ```
-Build the `builder`
+Run the `builder` to build the project
 ```sh
 docker compose -f docker-compose.dev.yml run --rm builder
 ```
