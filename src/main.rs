@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate rocket;
 
-use std::sync::{Mutex};
+use std::sync::Mutex;
 
 use uws_gateway::consumer::{consumer_list::ConsumerList};
 
@@ -11,8 +11,8 @@ use uws_gateway::guards::{HostHeader, ApiKey};
 
 
 #[get("/")]
-fn index(_key: ApiKey, _host: HostHeader, ) -> String{
-    format!("Hello, world!")
+fn index(_key: ApiKey, _host: HostHeader) -> String {
+    "Hello, world!".to_string()
 }
 
 use rocket::tokio::time::{sleep, Duration};
@@ -33,7 +33,6 @@ fn rocket() -> _ {
         .mount("/", routes![index, delay])
         .manage(ConsumerList::new(db))
 }
-
 
 #[cfg(test)]
 mod test {
