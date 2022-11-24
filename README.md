@@ -9,6 +9,7 @@
 ## Prerequisites
 - Rust (We recommend using [rustup](https://rustup.rs/) installer)
 ## Installation & Development
+
 To install the *gateway* you need to run the following command in your terminal to build project:
 
 ```sh
@@ -22,9 +23,37 @@ Then run the server:
 ```sh
 cargo run
 ```
+### Auto reload
+To trigger certain helpful actions when you update the code (like auto-restarting the server), install [cargo-watch](https://crates.io/crates/cargo-watch) 
+```sh
+cargo install cargo-watch
+```
 
-> The server doesn't auto update when you change the code. Remember to restart the server after you update the code. If you know a way to auto-restart after code changes (like in Flask) please let us know.
+Then run the following command to start a server that re-runs with every code change
+```sh
+cargo watch -x run
+```
 
+You can also re-run tests with every code change
+```sh
+cargo watch -x test
+```
+
+### Development using Docker
+Build containers
+```sh
+docker compose -f docker-compose.dev.yml build
+```
+Run the `builder` to build the project
+```sh
+docker compose -f docker-compose.dev.yml run --rm builder
+```
+Run the `server`
+```sh
+docker compose -f docker-compose.dev.yml run --rm runner
+```
+
+> The `server` auto-reloads if you run the `builder` and a new debug executable was created.
 ## Concept
 > In this document, I will assume a basic level of Software Engineering and basic knowledge about the Software as a Service (SaaS) model.
 

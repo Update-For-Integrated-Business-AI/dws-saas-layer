@@ -3,10 +3,12 @@ extern crate rocket;
 
 use std::sync::Mutex;
 
-use sass_layer::consumer::consumer_list::ConsumerList;
+use uws_gateway::consumer::{consumer_list::ConsumerList};
 
-use sass_layer::db::file_db::FlatTable;
-use sass_layer::guards::{ApiKey, HostHeader};
+use uws_gateway::db::file_db::FlatTable;
+use uws_gateway::guards::{HostHeader, ApiKey};
+
+
 
 #[get("/")]
 fn index(_key: ApiKey, _host: HostHeader) -> String {
@@ -24,6 +26,8 @@ async fn delay(seconds: u64) -> String {
 #[launch]
 fn rocket() -> _ {
     let db = Mutex::new(FlatTable::new("consumers".to_string()));
+    
+    println!("Running server..");
 
     rocket::build()
         .mount("/", routes![index, delay])

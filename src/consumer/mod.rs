@@ -17,12 +17,12 @@ pub struct Consumer {
 impl Consumer {
     pub fn new(id: u128, access_token: String, subscriber_id: u128) -> Consumer {
         Consumer {
-            id: id,
+            id,
             subscriber: Consumer::fetch_subscriber(
                 get_table_instance("subscribers"),
                 subscriber_id,
             ),
-            access_token: access_token,
+            access_token,
         }
     }
 
@@ -44,7 +44,7 @@ impl Consumer {
         let subscriber_list = SubscriberList::new(db);
         subscriber_list
             .get_by_id(subscriber_id)
-            .expect(&format!("Subscriber with id:{subscriber_id} is not found!"))
+            .unwrap_or_else(|| panic!("Subscriber with id:{subscriber_id} is not found!"))
     }
 }
 

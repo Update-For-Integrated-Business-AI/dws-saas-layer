@@ -20,6 +20,7 @@ pub struct Service {
 }
 
 impl Service {
+    #![allow(clippy::too_many_arguments)]
     pub fn new(
         id: u128,
         name: String,
@@ -65,7 +66,7 @@ impl Service {
         let product_list = ProductList::new(db);
         product_list
             .get_by_id(product_id)
-            .expect(&format!("Product with id:{product_id} is not found!"))
+            .unwrap_or_else(|| panic!("Product with id:{product_id} is not found!"))
     }
 }
 

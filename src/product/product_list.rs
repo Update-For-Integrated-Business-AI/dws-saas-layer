@@ -11,10 +11,10 @@ pub struct ProductList<D> {
 
 type FlatProductList = ProductList<FlatTable<String, String>>;
 
-impl<'a> FlatProductList {
+impl FlatProductList {
     pub fn new(db: Mutex<FlatTable<String, String>>) -> Self {
         ProductList {
-            db: db,
+            db,
             products: vec![],
         }
     }
