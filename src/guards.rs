@@ -18,6 +18,7 @@ impl<'r> FromRequest<'r> for HostHeader<'r> {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct ApiKey<'r>(&'r str);
 
 #[derive(Debug)]
@@ -38,9 +39,9 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
         }
 
         match req.headers().get_one("x-api-key") {
-            None => Outcome::Failure((Status::Unauthorized, ApiKeyError::Missing)),
+            None => Outcome::Error((Status::Unauthorized, ApiKeyError::Missing)),
             Some(key) if is_valid(req, key).await => Outcome::Success(ApiKey(key)),
-            Some(_) => Outcome::Failure((Status::Unauthorized, ApiKeyError::Invalid)),
+            Some(_) => Outcome::Error((Status::Unauthorized, ApiKeyError::Invalid)),
         }
     }
 }

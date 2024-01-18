@@ -24,17 +24,7 @@ where
         value: String,
     ) -> Option<S> {
         let mut lock = db.lock().expect("lock db");
-        let consumer = match lock.find_by(attr, value.as_str()) {
-            Some(record) => S::from(record.clone()),
-            None => panic!(
-                "No records found in {} for {} -> {}!",
-                lock.get_table_name(),
-                attr,
-                value
-            ),
-        };
-
-        Some(consumer)
+        lock.find_by(attr, value.as_str()).map(|record| S::from(record.clone()))
     }
 }
 
